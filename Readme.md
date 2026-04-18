@@ -105,6 +105,7 @@ We developed a system that:
 ---
 
 ## 📂 Project Structure
+```
 Papaya-Disease-Detection/
 │
 ├── app.py
@@ -115,7 +116,7 @@ Papaya-Disease-Detection/
 ├── static/
 ├── templates/
 │ └── index.html
-
+```
 
 ---
 
@@ -127,7 +128,7 @@ cd papaya-disease-detection
 
 pip install -r requirements.txt
 python app.py
-
+```
 ## 🌍 Deployment
 
 The application is deployed on the cloud using **Render**, making it accessible from anywhere via a web browser on both desktop and mobile devices.
