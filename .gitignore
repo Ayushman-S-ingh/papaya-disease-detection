@@ -1,0 +1,5 @@
+myenv/
+__pycache__/
+dataset/
+*.pyc
+.DS_Store

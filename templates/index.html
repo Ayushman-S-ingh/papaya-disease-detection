@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Crop Health Analyzer</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 30px;
+    font-size: 2.2rem;
+    color: #38bdf8;
+}
+
+.box {
+    background: #1e293b;
+    padding: 25px;
+    margin: 25px auto;
+    width: 60%;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.box:hover {
+    transform: translateY(-3px);
+}
+
+input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 60%;
+    background: #334155;
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #38bdf8;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0ea5e9;
+    transform: scale(1.05);
+}
+
+img {
+    width: 300px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+video {
+    width: 300px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>🌿 AI Crop Health Analyzer</h1>
+
+<!-- Upload -->
+<div class="box">
+    <h3>Upload Image</h3>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <br><br>
+        <button type="submit">Predict</button>
+    </form>
+</div>
+
+<!-- Camera -->
+<div class="box">
+    <h3>Use Camera 📷</h3>
+
+    <video id="video" autoplay></video>
+    <br><br>
+
+    <!-- ✅ NEW BUTTONS -->
+    <button onclick="startCamera()">Start Camera</button>
+    <button onclick="capture()">Capture</button>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <form method="POST">
+        <input type="hidden" name="captured_image" id="captured_image">
+        <button type="submit">Predict from Camera</button>
+    </form>
+</div>
+
+<!-- Result -->
+{% if prediction %}
+<div class="box">
+    <h2>Prediction: {{ prediction }}</h2>
+    <p><strong>Confidence:</strong> {{ confidence }}%</p>
+
+    <img src="{{ image_path }}">
+
+    <p><strong>Description:</strong> {{ info.description }}</p>
+    <p><strong>Symptoms:</strong> {{ info.symptoms }}</p>
+    <p><strong>Solution:</strong> {{ info.solution }}</p>
+</div>
+{% endif %}
+
+<!-- AI -->
+<div class="box">
+    <h3>Ask AI 🤖</h3>
+    <form method="POST">
+        <input type="text" name="question" placeholder="Ask about disease..." required>
+        <br><br>
+        <button type="submit">Ask</button>
+    </form>
+
+    {% if ai_answer %}
+        <p><strong>AI Answer:</strong> {{ ai_answer }}</p>
+    {% endif %}
+</div>
+
+<script>
+const video = document.getElementById('video');
+let stream = null;
+
+// ✅ Start camera ONLY when clicked
+function startCamera() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(s => {
+            stream = s;
+            video.srcObject = stream;
+        });
+}
+
+// ✅ Stop camera
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+}
+
+// ✅ Capture + auto stop
+function capture() {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = 224;
+    canvas.height = 224;
+
+    context.drawImage(video, 0, 0, 224, 224);
+
+    const dataURL = canvas.toDataURL('image/jpeg', 0.6);
+    document.getElementById('captured_image').value = dataURL;
+
+    stopCamera(); // 🔥 stop after capture
+}
+</script>
+
+</body>
+</html>
