@@ -24,11 +24,10 @@ custom_objects = {
     "InputLayer": FixedInputLayer
 }
 
-# Load model safely
 model = tf.keras.models.load_model(
-    "papaya_model.keras",
-    custom_objects=custom_objects,
-    compile=False
+    "papaya_model.h5",
+    compile=False,
+    safe_mode=False
 )
 
 # Classes
