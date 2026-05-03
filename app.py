@@ -10,24 +10,29 @@ from keras.layers import InputLayer
 
 app = Flask(__name__)
 
-# 🔥 FIX: Increase upload size (camera issue)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
-# 🔧 Fix for Keras compatibility issue
+
+
+# 🔧 Fix incompatible arguments
 class FixedInputLayer(InputLayer):
     def __init__(self, *args, **kwargs):
         kwargs.pop("batch_shape", None)
         kwargs.pop("optional", None)
         super().__init__(*args, **kwargs)
 
-# 👇 Custom objects mapping
-custom_objects = {
-    "InputLayer": FixedInputLayer
-}
+# 🔧 Fix Sequential config
+def fix_config(config):
+    if "layers" in config:
+        for layer in config["layers"]:
+            if "config" in layer:
+                layer["config"].pop("batch_shape", None)
+                layer["config"].pop("optional", None)
+    return config
 
+# Load model safely
 model = tf.keras.models.load_model(
-    "papaya_model.h5",
-    compile=False,
-    safe_mode=False
+    "papaya_model.keras",
+    custom_objects={"InputLayer": FixedInputLayer},
+    compile=False
 )
 
 # Classes
