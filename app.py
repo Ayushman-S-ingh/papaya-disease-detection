@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 
 # Load model
-model = tf.keras.models.load_model("papaya_model.h5")
+model = tf.keras.models.load_model("papaya_model.h5", compile=False)
 
 # Classes
 class_names = [
