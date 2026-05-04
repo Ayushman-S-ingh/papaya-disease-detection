@@ -201,13 +201,15 @@ def index():
             img_array = image.img_to_array(img)
             img_array = np.expand_dims(img_array, axis=0) / 255.0
 
+            # ✅ Correct prediction
             pred = model(img_array)
-            pred_index = np.argmax(pred)
-            pred = model(img_array)
-            pred = pred.numpy()
 
-            confidence_val = float(np.max(pred))
+            # convert tensor → numpy
+            if hasattr(pred, "numpy"):
+                pred = pred.numpy()
+
             pred_index = np.argmax(pred)
+            confidence_val = float(np.max(pred))
 
             if confidence_val < 0.3:
                 prediction = "Unknown"
