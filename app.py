@@ -201,8 +201,10 @@ def index():
             img_array = image.img_to_array(img)
             img_array = np.expand_dims(img_array, axis=0) / 255.0
 
-            pred = model.predict(img_array)
+            pred = model(img_array)
             pred_index = np.argmax(pred)
+            pred = model(img_array)
+            pred = pred.numpy()
 
             confidence_val = float(np.max(pred))
             pred_index = np.argmax(pred)
