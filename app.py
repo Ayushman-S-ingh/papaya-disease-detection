@@ -10,30 +10,7 @@ from keras.layers import InputLayer
 
 app = Flask(__name__)
 
-
-
-# 🔧 Fix incompatible arguments
-class FixedInputLayer(InputLayer):
-    def __init__(self, *args, **kwargs):
-        kwargs.pop("batch_shape", None)
-        kwargs.pop("optional", None)
-        super().__init__(*args, **kwargs)
-
-# 🔧 Fix Sequential config
-def fix_config(config):
-    if "layers" in config:
-        for layer in config["layers"]:
-            if "config" in layer:
-                layer["config"].pop("batch_shape", None)
-                layer["config"].pop("optional", None)
-    return config
-
-# Load model safely
-model = tf.keras.models.load_model(
-    "papaya_model.keras",
-    custom_objects={"InputLayer": FixedInputLayer},
-    compile=False
-)
+model = tf.keras.models.load_model("papaya_model_export")
 
 # Classes
 class_names = [
