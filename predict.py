@@ -2,7 +2,8 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing import image
 
-model = tf.keras.models.load_model("papaya_model.h5")
+# ✅ Load exported model (folder)
+model = tf.keras.models.load_model("papaya_model_export")
 
 class_names = [
     "Bacterial_Blight",
