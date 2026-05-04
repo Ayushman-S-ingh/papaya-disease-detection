@@ -8,9 +8,10 @@ from io import BytesIO
 from PIL import Image
 from keras.layers import InputLayer
 
+
+
 app = Flask(__name__)
 
-model = tf.keras.models.load_model("papaya_model_export")
 
 # Classes
 class_names = [
@@ -167,9 +168,15 @@ last_result = {
     "confidence": None
 }
 
+model = None
 @app.route("/", methods=["GET", "POST"])
 
 def index():
+    global model
+
+    if model is None:
+        print("Loading model...")
+        model = tf.saved_model.load("papaya_model_export")
     prediction = None
     info = None
     image_path = None
