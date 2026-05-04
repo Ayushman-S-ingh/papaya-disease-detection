@@ -201,12 +201,10 @@ def index():
             img_array = image.img_to_array(img)
             img_array = np.expand_dims(img_array, axis=0) / 255.0
 
-            # ✅ Correct prediction
-            pred = model(img_array)
-
-            # convert tensor → numpy
-            if hasattr(pred, "numpy"):
-                pred = pred.numpy()
+            # ✅ FIXED prediction
+            infer = model.signatures["serving_default"]
+            pred = infer(tf.constant(img_array))
+            pred = list(pred.values())[0].numpy()
 
             pred_index = np.argmax(pred)
             confidence_val = float(np.max(pred))
