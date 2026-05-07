@@ -1,3 +1,4 @@
+import React from "react";
 // src/pages/Predict.jsx
 // Main prediction page with drag-and-drop upload, camera capture, and real-time results
 import { useState, useRef, useCallback } from "react";

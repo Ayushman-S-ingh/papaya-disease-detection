@@ -1,3 +1,4 @@
+import React from "react";
 // src/components/common/ConfidenceBar.jsx
 export default function ConfidenceBar({ value }) {
   const pct = Math.min(100, Math.max(0, Number(value)));

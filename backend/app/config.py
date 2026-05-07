@@ -12,10 +12,8 @@ class Config:
     DEBUG = os.environ.get("FLASK_DEBUG", "0") == "1"
 
     # Database
-    DATABASE_URL = os.environ.get(
-        "DATABASE_URL",
-        "postgresql://papaya_user:papaya_pass@localhost:5432/papaya_db"
-    )
+    DATABASE_URL = "sqlite:///papaya.db"
+
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 300}
@@ -34,24 +32,23 @@ class Config:
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
     # ML Model
-    MODEL_PATH = os.environ.get("MODEL_PATH", "ml/models/efficientnetb0_papaya.h5")
+    MODEL_PATH = os.environ.get(
+    "MODEL_PATH",
+    "app/ml/papaya_model.h5"
+)
     IMG_SIZE = (224, 224)
     CONFIDENCE_THRESHOLD = 0.60
 
     # Disease classes (must match training order)
     DISEASE_CLASSES = [
-        "Healthy Leaf",
-        "Papaya Ring Spot Virus",
-        "Powdery Mildew",
-        "Leaf Curl Disease",
-        "Anthracnose",
-        "Phytophthora Blight",
-        "Mosaic Virus",
-        "Downy Mildew",
-        "Bacterial Spot",
-        "Cercospora Leaf Spot",
-        "Yellow Crinkle Disease",
-        "Nutrient Deficiency",
+    "Anthracnose",
+    "Bacterial Spot",
+    "Curl",
+    "Healthy",
+    "Mealybug",
+    "Mite Disease",
+    "Mosaic",
+    "Ringspot"
     ]
 
     # ReportLab / PDF
