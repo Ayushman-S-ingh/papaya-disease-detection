@@ -21,7 +21,7 @@ export default function History() {
       const token = localStorage.getItem("access_token");
 
       const response = await axios.get(
-        "http://127.0.0.1:5000/api/history",
+        `${import.meta.env.VITE_API_URL}/api/history`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export default function History() {
       const token = localStorage.getItem("access_token");
 
       await axios.delete(
-        `http://127.0.0.1:5000/api/history/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/history/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -166,7 +166,7 @@ export default function History() {
 
                 {/* IMAGE */}
                 <img
-                  src={`http://127.0.0.1:5000${item.image_url}`}
+                  src={`${import.meta.env.VITE_API_URL}${item.image_url}`}
                   alt="leaf"
                   style={{
                     width: "170px",
