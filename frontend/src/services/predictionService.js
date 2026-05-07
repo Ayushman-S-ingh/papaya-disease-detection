@@ -88,7 +88,7 @@ export const predictionService = {
 
       const response =
         await axios.get(
-          `${API_URL}/api/analytics/summary`,
+          `${API_URL}/api/analytics`,
           {
             headers:
               getAuthHeaders(),
