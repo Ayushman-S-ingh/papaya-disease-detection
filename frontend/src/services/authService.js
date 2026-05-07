@@ -1,46 +1,106 @@
+// src/services/authService.js
+
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:5000";
+// =========================
+// BASE API URL
+// =========================
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000";
 
+// =========================
+// AUTH SERVICE
+// =========================
 export const authService = {
-  login: async (email, password) => {
+
+  // LOGIN
+  login: async (
+    email,
+    password
+  ) => {
+
     try {
-      const response = await axios.post(
-        `${API_URL}/api/auth/login`,
-        {
-          email,
-          password,
-        }
-      );
+
+      const response =
+        await axios.post(
+          `${API_URL}/api/auth/login`,
+          {
+            email,
+            password,
+          }
+        );
 
       return response.data;
+
     } catch (error) {
-      console.error("Login error:", error);
+
+      console.error(
+        "Login error:",
+        error
+      );
+
       throw error;
     }
   },
 
-  register: async (userData) => {
+  // REGISTER
+  register: async (
+    userData
+  ) => {
+
     try {
-      const response = await axios.post(
-        `${API_URL}/api/auth/register`,
-        userData
-      );
+
+      const response =
+        await axios.post(
+          `${API_URL}/api/auth/register`,
+          userData
+        );
 
       return response.data;
+
     } catch (error) {
-      console.error("Register error:", error);
+
+      console.error(
+        "Register error:",
+        error
+      );
+
       throw error;
     }
   },
 
+  // GET CURRENT USER
   getMe: async () => {
-    return {
-      user: {
-        name: "Ayushman",
-        email: "demo@example.com",
-        role: "user"
-      }
-    };
+
+    try {
+
+      const token =
+        localStorage.getItem(
+          "access_token"
+        );
+
+      const response =
+        await axios.get(
+          `${API_URL}/api/auth/me`,
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
+
+      return response.data;
+
+    } catch (error) {
+
+      console.error(
+        "Get user error:",
+        error
+      );
+
+      throw error;
+    }
   },
 };
