@@ -1,5 +1,21 @@
+# Python
 myenv/
+myenv311/
 __pycache__/
-dataset/
 *.pyc
+
+# Node
+node_modules/
+
+# Environment
+.env
+
+# Mac
 .DS_Store
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
