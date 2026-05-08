@@ -8,18 +8,29 @@ export default function Analytics() {
 
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState("");
+
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://127.0.0.1:5000";
+
   useEffect(() => {
+
     fetchAnalytics();
+
   }, []);
 
   const fetchAnalytics = async () => {
 
     try {
 
-      const token = localStorage.getItem("access_token");
+      setLoading(true);
+
+      const token =
+        localStorage.getItem("access_token");
 
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/analytics/`,
+        `${API_URL}/api/analytics`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,11 +40,18 @@ export default function Analytics() {
 
       setStats(response.data);
 
+      setError("");
+
     } catch (error) {
 
       console.error(
         "Analytics fetch failed:",
         error.response?.data || error
+      );
+
+      setError(
+        error.response?.data?.error ||
+        "Failed to load analytics"
       );
 
     } finally {
@@ -43,39 +61,60 @@ export default function Analytics() {
     }
   };
 
+  // ─────────────────────────────────────────────
+
   if (loading) {
 
     return (
       <>
         <Navbar />
 
-        <h2
+        <div
           style={{
-            padding: "30px",
+            padding: "40px",
+            fontSize: "22px",
+            color: "#14532d",
           }}
         >
           Loading analytics...
-        </h2>
+        </div>
       </>
     );
   }
 
-  if (!stats) {
+  // ─────────────────────────────────────────────
+
+  if (error) {
 
     return (
       <>
         <Navbar />
 
-        <h2
+        <div
           style={{
-            padding: "30px",
+            padding: "40px",
           }}
         >
-          Failed to load analytics
-        </h2>
+
+          <div
+            style={{
+              background: "#fee2e2",
+              color: "#b91c1c",
+              padding: "20px",
+              borderRadius: "12px",
+              fontSize: "18px",
+              maxWidth: "500px",
+            }}
+          >
+            {error}
+          </div>
+
+        </div>
       </>
     );
   }
+
+  // ─────────────────────────────────────────────
 
   return (
 
@@ -94,7 +133,7 @@ export default function Analytics() {
           style={{
             color: "#1b4332",
             marginBottom: "30px",
-            fontSize: "40px",
+            fontSize: "42px",
             fontWeight: "bold",
           }}
         >
@@ -102,6 +141,7 @@ export default function Analytics() {
         </h1>
 
         {/* TOP CARDS */}
+
         <div
           style={{
             display: "grid",
@@ -120,7 +160,7 @@ export default function Analytics() {
             <h2>Total Predictions</h2>
 
             <p style={numberStyle}>
-              {stats.total_predictions}
+              {stats?.total_predictions || 0}
             </p>
 
           </div>
@@ -134,7 +174,7 @@ export default function Analytics() {
             <h2>Healthy Leaves</h2>
 
             <p style={numberStyle}>
-              {stats.healthy_predictions}
+              {stats?.healthy_predictions || 0}
             </p>
 
           </div>
@@ -148,14 +188,15 @@ export default function Analytics() {
             <h2>Disease Detections</h2>
 
             <p style={numberStyle}>
-              {stats.disease_predictions}
+              {stats?.disease_predictions || 0}
             </p>
 
           </div>
 
         </div>
 
-        {/* BREAKDOWN */}
+        {/* DISEASE BREAKDOWN */}
+
         <div
           style={{
             marginTop: "40px",
@@ -177,59 +218,74 @@ export default function Analytics() {
             Disease Breakdown
           </h2>
 
-          {stats.disease_breakdown?.map(
-            (item, index) => (
+          {stats?.disease_breakdown?.length > 0 ? (
 
-              <div
-                key={index}
-                style={{
-                  marginBottom: "24px",
-                }}
-              >
+            stats.disease_breakdown.map(
+              (item, index) => (
 
                 <div
+                  key={index}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "8px",
-                    fontSize: "18px",
-                  }}
-                >
-
-                  <strong>
-                    {item.name}
-                  </strong>
-
-                  <span>
-                    {item.count}
-                  </span>
-
-                </div>
-
-                <div
-                  style={{
-                    width: "100%",
-                    height: "16px",
-                    background: "#d8f3dc",
-                    borderRadius: "20px",
-                    overflow: "hidden",
+                    marginBottom: "24px",
                   }}
                 >
 
                   <div
                     style={{
-                      width: `${item.percentage}%`,
-                      height: "100%",
-                      background: "#2d6a4f",
-                      transition: "1s",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "8px",
+                      fontSize: "18px",
                     }}
-                  />
+                  >
+
+                    <strong>
+                      {item.name}
+                    </strong>
+
+                    <span>
+                      {item.count}
+                    </span>
+
+                  </div>
+
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "16px",
+                      background: "#d8f3dc",
+                      borderRadius: "20px",
+                      overflow: "hidden",
+                    }}
+                  >
+
+                    <div
+                      style={{
+                        width: `${item.percentage}%`,
+                        height: "100%",
+                        background: "#2d6a4f",
+                        transition: "1s",
+                      }}
+                    />
+
+                  </div>
 
                 </div>
 
-              </div>
-
+              )
             )
+
+          ) : (
+
+            <p
+              style={{
+                color: "#666",
+                fontSize: "18px",
+              }}
+            >
+              No analytics data available yet.
+            </p>
+
           )}
 
         </div>
@@ -238,6 +294,8 @@ export default function Analytics() {
     </>
   );
 }
+
+// ─────────────────────────────────────────────
 
 const cardStyle = {
 
@@ -257,6 +315,8 @@ const cardStyle = {
   gap: "10px",
 };
 
+// ─────────────────────────────────────────────
+
 const iconStyle = {
 
   fontSize: "34px",
@@ -275,6 +335,8 @@ const iconStyle = {
 
   justifyContent: "center",
 };
+
+// ─────────────────────────────────────────────
 
 const numberStyle = {
 

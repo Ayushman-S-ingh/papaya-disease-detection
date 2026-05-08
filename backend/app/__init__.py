@@ -48,12 +48,13 @@ def create_app(config_class=Config):
     jwt.init_app(app)
 
     CORS(
-        app,
-        resources={
-            r"/api/*": {
-                "origins": app.config["CORS_ORIGINS"]
-            }
+    app,
+    resources={
+        r"/api/*": {
+            "origins": "*"
         }
+    },
+    supports_credentials=True
     )
 
 
