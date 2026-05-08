@@ -1,11 +1,25 @@
+import tensorflow as tf
 from tensorflow.keras.models import load_model
-from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import BatchNormalization, Dense
 
 
 # =====================================================
-# CUSTOM BATCH NORMALIZATION
+# CUSTOM DENSE
+# =====================================================
+class CustomDense(Dense):
+
+    def __init__(self, *args, **kwargs):
+
+        kwargs.pop("quantization_config", None)
+
+        super().__init__(*args, **kwargs)
+
+
+# =====================================================
+# CUSTOM BN
 # =====================================================
 class CustomBatchNormalization(BatchNormalization):
+
     def __init__(self, *args, **kwargs):
 
         kwargs.pop("renorm", None)
@@ -19,19 +33,31 @@ class CustomBatchNormalization(BatchNormalization):
 # =====================================================
 # LOAD OLD MODEL
 # =====================================================
-model = load_model(
+old_model = load_model(
     "app/ml/papaya_model.h5",
     custom_objects={
-        "CustomBatchNormalization": CustomBatchNormalization,
+        "Dense": CustomDense,
         "BatchNormalization": CustomBatchNormalization,
+        "CustomBatchNormalization": CustomBatchNormalization,
     },
     compile=False
 )
 
 
 # =====================================================
-# SAVE NEW KERAS MODEL
+# REBUILD CLEAN MODEL
 # =====================================================
-model.save("app/ml/papaya_model.keras")
+clean_model = tf.keras.models.clone_model(old_model)
 
-print("✅ Model converted successfully!")
+clean_model.set_weights(old_model.get_weights())
+
+
+# =====================================================
+# SAVE CLEAN MODEL
+# =====================================================
+clean_model.save(
+    "app/ml/papaya_model.keras",
+    save_format="keras"
+)
+
+print("✅ CLEAN MODEL SAVED")

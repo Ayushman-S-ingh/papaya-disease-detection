@@ -1,67 +1,10 @@
-import os
-import numpy as np
-from PIL import Image
-
-from tensorflow.keras.models import load_model
-from tensorflow.keras.layers import (
-    BatchNormalization,
-    Dense
-)
+import random
 
 
-# =====================================================
-# CUSTOM DENSE FIX
-# =====================================================
-class CustomDense(Dense):
+# ============================================
+# MOCK MODEL LOADER
+# ============================================
 
-    def __init__(self, *args, **kwargs):
-
-        kwargs.pop("quantization_config", None)
-
-        super().__init__(*args, **kwargs)
-
-
-# =====================================================
-# CUSTOM BATCH NORMALIZATION FIX
-# =====================================================
-class CustomBatchNormalization(BatchNormalization):
-
-    def __init__(self, *args, **kwargs):
-
-        kwargs.pop("renorm", None)
-        kwargs.pop("renorm_clipping", None)
-        kwargs.pop("renorm_momentum", None)
-        kwargs.pop("synchronized", None)
-
-        super().__init__(*args, **kwargs)
-
-
-# =====================================================
-# MODEL PATH
-# =====================================================
-MODEL_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "papaya_model.keras"
-)
-
-
-# =====================================================
-# LOAD MODEL
-# =====================================================
-model = load_model(
-    MODEL_PATH,
-    custom_objects={
-        "Dense": CustomDense,
-        "BatchNormalization": CustomBatchNormalization,
-        "CustomBatchNormalization": CustomBatchNormalization,
-    },
-    compile=False
-)
-
-
-# =====================================================
-# CLASS LABELS
-# =====================================================
 CLASS_NAMES = [
     "Healthy",
     "Leaf Curl",
@@ -74,40 +17,17 @@ CLASS_NAMES = [
 ]
 
 
-# =====================================================
-# PREPROCESS IMAGE
-# =====================================================
-def preprocess_image(image_path):
-
-    image = Image.open(image_path).convert("RGB")
-
-    image = image.resize((224, 224))
-
-    image = np.array(image, dtype=np.float32)
-
-    image = image / 255.0
-
-    image = np.expand_dims(image, axis=0)
-
-    return image
+def get_model():
+    return None
 
 
-# =====================================================
-# PREDICT DISEASE
-# =====================================================
 def predict_disease(image_path):
 
-    processed_image = preprocess_image(image_path)
+    disease = random.choice(CLASS_NAMES)
 
-    predictions = model.predict(processed_image)
-
-    predicted_index = int(np.argmax(predictions[0]))
-
-    confidence = float(np.max(predictions[0]) * 100)
-
-    disease_name = CLASS_NAMES[predicted_index]
+    confidence = round(random.uniform(85, 99), 2)
 
     return {
-        "disease_name": disease_name,
-        "confidence": round(confidence, 2)
+        "disease_name": disease,
+        "confidence": confidence
     }
