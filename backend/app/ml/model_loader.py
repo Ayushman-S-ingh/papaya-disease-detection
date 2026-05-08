@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import tensorflow as tf
+from PIL import Image
 
 from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import (
@@ -8,13 +8,12 @@ from tensorflow.keras.layers import (
     Dense
 )
 
-from PIL import Image
-
 
 # =====================================================
 # CUSTOM DENSE FIX
 # =====================================================
 class CustomDense(Dense):
+
     def __init__(self, *args, **kwargs):
 
         kwargs.pop("quantization_config", None)
@@ -26,6 +25,7 @@ class CustomDense(Dense):
 # CUSTOM BATCH NORMALIZATION FIX
 # =====================================================
 class CustomBatchNormalization(BatchNormalization):
+
     def __init__(self, *args, **kwargs):
 
         kwargs.pop("renorm", None)
@@ -41,7 +41,7 @@ class CustomBatchNormalization(BatchNormalization):
 # =====================================================
 MODEL_PATH = os.path.join(
     os.path.dirname(__file__),
-    "papaya_model.h5"
+    "papaya_model.keras"
 )
 
 
@@ -53,14 +53,14 @@ model = load_model(
     custom_objects={
         "Dense": CustomDense,
         "BatchNormalization": CustomBatchNormalization,
-        "CustomBatchNormalization": CustomBatchNormalization
+        "CustomBatchNormalization": CustomBatchNormalization,
     },
     compile=False
 )
 
 
 # =====================================================
-# CLASS NAMES
+# CLASS LABELS
 # =====================================================
 CLASS_NAMES = [
     "Healthy",
@@ -83,7 +83,9 @@ def preprocess_image(image_path):
 
     image = image.resize((224, 224))
 
-    image = np.array(image) / 255.0
+    image = np.array(image, dtype=np.float32)
+
+    image = image / 255.0
 
     image = np.expand_dims(image, axis=0)
 
@@ -91,7 +93,7 @@ def preprocess_image(image_path):
 
 
 # =====================================================
-# PREDICT FUNCTION
+# PREDICT DISEASE
 # =====================================================
 def predict_disease(image_path):
 
@@ -99,7 +101,7 @@ def predict_disease(image_path):
 
     predictions = model.predict(processed_image)
 
-    predicted_index = np.argmax(predictions[0])
+    predicted_index = int(np.argmax(predictions[0]))
 
     confidence = float(np.max(predictions[0]) * 100)
 
